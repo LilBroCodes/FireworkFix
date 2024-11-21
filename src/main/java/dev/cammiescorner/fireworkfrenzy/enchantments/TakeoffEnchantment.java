@@ -20,6 +20,7 @@ public class TakeoffEnchantment extends Enchantment {
 		return 1;
 	}
 
+
 	@Override
 	protected boolean canAccept(Enchantment other) {
 		return other != Enchantments.FEATHER_FALLING && super.canAccept(other);

@@ -25,9 +25,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements BlastJum
 	@Inject(method = "tick", at = @At("TAIL"))
 	public void fireworkfrenzy$tick(CallbackInfo info) {
 		if(isBlastJumping()) {
-			airStrafingSpeed *= FireworkFrenzyConfig.airStrafingMultiplier;
+			setVelocity(getVelocity().multiply(FireworkFrenzyConfig.airStrafingMultiplier));
 
-			if(!world.isClient() && (isOnGround() || isSubmergedInWater()))
+			if(!getWorld().isClient() && (isOnGround() || isSubmergedInWater()))
 				setTimeOnGround(getTimeOnGround() + 1);
 
 			if(getTimeOnGround() > 2 || hasVehicle() || (FireworkFrenzyConfig.elytraCancelsRocketJumping && isFallFlying()) || !isAlive())
