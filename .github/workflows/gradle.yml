@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "${{ env.TAG_NAME }}"
-          release_name: "FireworkFix ${{ env.MOD_VERSION }}"
+          release_name: "Firework Frenzy ${{ env.MOD_VERSION }}"
           draft: false
           prerelease: false
 
