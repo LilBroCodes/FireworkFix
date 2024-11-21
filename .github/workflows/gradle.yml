@@ -1,0 +1,58 @@
+name: Build and Release Mod
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17  # or the required version for Minecraft modding
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Get mod version from gradle.properties
+        id: get_version
+        run: |
+          VERSION=$(grep '^mod_version' gradle.properties | cut -d'=' -f2 | xargs)
+          echo "MOD_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Get short commit hash
+        id: get_commit
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Create Release Tag with Commit Hash
+        run: |
+          TAG_NAME="v${{ env.MOD_VERSION }}+${{ env.COMMIT_HASH }}"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "${{ env.TAG_NAME }}"
+          release_name: "FireworkFix ${{ env.MOD_VERSION }}"
+          draft: false
+          prerelease: false
+
+      - name: Upload JAR to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/FireworkFix-${{ env.MOD_VERSION }}.jar
+          asset_name: FireworkFix-${{ env.MOD_VERSION }}.jar
+          asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
